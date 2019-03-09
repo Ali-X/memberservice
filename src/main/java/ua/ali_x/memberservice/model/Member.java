@@ -85,11 +85,4 @@ public class Member {
     public void setPictureId(String pictureId) {
         this.pictureId = pictureId;
     }
-
-    @Override
-    public String toString() {
-        return "Name: ".concat(lname).concat(" ").concat(fname).concat("\n")
-                .concat("Birth date: ").concat(String.valueOf(birth)).concat("\n")
-                .concat("Postal code: ").concat(String.valueOf(zip));
-    }
 }
