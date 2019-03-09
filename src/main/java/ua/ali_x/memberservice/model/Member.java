@@ -3,6 +3,8 @@ package ua.ali_x.memberservice.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Member {
@@ -13,15 +15,15 @@ public class Member {
     private String lname;
     private Date birth;
     private Integer zip;
-    private String picture;
+    private String pictureId;
 
-    public Member(ObjectId _id, String fname, String lname, Date birth, Integer zip, String picture) {
+    public Member(ObjectId _id, String fname, String lname, Date birth, Integer zip, String pictureId) {
         this._id = _id;
         this.fname = fname;
         this.lname = lname;
         this.birth = birth;
         this.zip = zip;
-        this.picture = picture;
+        this.pictureId = pictureId;
     }
 
     public Member() {
@@ -56,8 +58,12 @@ public class Member {
         return birth;
     }
 
-    public void setBirth(Date birth) {
-        this.birth = birth;
+    public void setBirth(String birth) {
+        try {
+            this.birth = new SimpleDateFormat("dd.MM.yyyy").parse(birth);
+        } catch (ParseException e) {
+            System.out.println("Wrong data format for birth date");
+        }
     }
 
     public Integer getZip() {
@@ -68,11 +74,11 @@ public class Member {
         this.zip = zip;
     }
 
-    public String getPicture() {
-        return picture;
+    public String getPictureId() {
+        return pictureId;
     }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
+    public void setPictureId(String pictureId) {
+        this.pictureId = pictureId;
     }
 }
