@@ -16,7 +16,8 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @ResponseBody
+    @RequestMapping(value = "/", method = RequestMethod.GET, produces = {"application/json", "application/xml"})
     public List<Member> getAll() {
         return memberService.findAll();
     }
@@ -26,17 +27,32 @@ public class MemberController {
         memberService.delete(id);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
+    @ResponseBody
+    @RequestMapping(value = "/{id}", method = RequestMethod.POST, produces = {"application/json", "application/xml"}, consumes = {"multipart/form-data"})
     public Member updateById(@Valid @ModelAttribute Member member, @PathVariable("id") ObjectId id, @RequestParam(value = "file", required = false) MultipartFile file) {
         return memberService.save(id, member, file);
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @ResponseBody
+    @RequestMapping(value = "/{id}", method = RequestMethod.POST, produces = {"application/json", "application/xml"}, consumes = {"application/json", "application/xml"})
+    public Member updateById(@Valid @RequestBody Member member, @PathVariable("id") ObjectId id) {
+        return memberService.save(id, member, null);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/", method = RequestMethod.POST, produces = {"application/json", "application/xml"}, consumes = {"application/json", "application/xml"})
+    public Member create(@Valid @RequestBody Member member) {
+        return memberService.save(ObjectId.get(), member, null);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/", method = RequestMethod.POST, produces = {"application/json", "application/xml"}, consumes = {"multipart/form-data"})
     public Member create(@Valid @ModelAttribute Member member, @RequestParam(value = "file", required = false) MultipartFile file) {
         return memberService.save(ObjectId.get(), member, file);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = {"application/json", "application/xml"})
     public Member getById(@PathVariable("id") ObjectId id) {
         return memberService.findById(id);
     }
