@@ -1,7 +1,9 @@
 package ua.ali_x.memberservice.controller;
 
+import com.mongodb.gridfs.GridFSDBFile;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,26 +28,34 @@ public class MemberController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable ObjectId id) {
+    public ResponseEntity<String> delete(@PathVariable ObjectId id) {
         memberService.delete(id);
+
+        return ResponseEntity.ok("Success!");
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<Member> updateById(@PathVariable("id") ObjectId id, @Valid @RequestBody Member member, @RequestParam(value = "file", required = false) MultipartFile file) {
-        memberService.save(id, member, file);
-
-        return ResponseEntity.ok(member);
+    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
+    public ResponseEntity<Member> updateById(@Valid @ModelAttribute Member member, @PathVariable("id") ObjectId id, @RequestParam(value = "file", required = false) MultipartFile file) {
+        return ResponseEntity.ok(memberService.save(id, member, file));
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public ResponseEntity<Member> create(@Valid @ModelAttribute Member member, @RequestParam(value = "file", required = false) MultipartFile file) {
-        memberService.save(ObjectId.get(), member, file);
-
-        return ResponseEntity.ok(member);
+        return ResponseEntity.ok(memberService.save(ObjectId.get(), member, file));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public Member getById(@PathVariable("id") ObjectId id) {
-        return memberService.findById(id);
+    public ResponseEntity<String> getById(@PathVariable("id") ObjectId id) {
+        Member member = memberService.findById(id);
+
+        if (member != null) {
+            GridFSDBFile gridFSDBFile = mongoGridFsService.retrieveImageFile(member.getPictureId());
+
+            return ResponseEntity.ok()
+                    .body("Member: " + member + "\nPicture: " + gridFSDBFile.getFilename());
+        }
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body("Member is not found!");
     }
 }

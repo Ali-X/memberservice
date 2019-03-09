@@ -13,20 +13,25 @@ import java.util.List;
 @Service
 public class MemberService {
     @Autowired
-    private MemberRepository repository;
+    private MemberRepository memberRepository;
     @Autowired
     private MongoGridFsService mongoGridFsService;
 
 
     public List<Member> findAll() {
-        return repository.findAll();
+        return memberRepository.findAll();
     }
 
     public void delete(ObjectId id) {
-        repository.delete(repository.findBy_id(id));
+        Member member = memberRepository.findBy_id(id);
+
+        if (member != null) {
+            mongoGridFsService.deleteFile(member.getPictureId());
+            memberRepository.delete(member);
+        }
     }
 
-    public void save(ObjectId id, Member member, MultipartFile file) {
+    public Member save(ObjectId id, Member member, MultipartFile file) {
         String fileId = mongoGridFsService.saveFile(file);
 
         if (StringUtils.isNotBlank(fileId)) {
@@ -35,10 +40,10 @@ public class MemberService {
 
         member.set_id(id);
 
-        repository.save(member);
+        return memberRepository.save(member);
     }
 
     public Member findById(ObjectId id) {
-        return repository.findBy_id(id);
+        return memberRepository.findBy_id(id);
     }
 }

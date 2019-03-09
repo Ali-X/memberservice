@@ -2,12 +2,16 @@ package ua.ali_x.memberservice.model;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import ua.ali_x.memberservice.service.MongoGridFsService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Logger;
 
 public class Member {
+
+    private static final Logger logger = Logger.getLogger(MongoGridFsService.class.getName());
 
     @Id
     private ObjectId _id;
@@ -62,7 +66,7 @@ public class Member {
         try {
             this.birth = new SimpleDateFormat("dd.MM.yyyy").parse(birth);
         } catch (ParseException e) {
-            System.out.println("Wrong data format for birth date");
+            logger.warning(e.getMessage());
         }
     }
 
@@ -80,5 +84,12 @@ public class Member {
 
     public void setPictureId(String pictureId) {
         this.pictureId = pictureId;
+    }
+
+    @Override
+    public String toString() {
+        return "Name: ".concat(lname).concat(" ").concat(fname).concat("\n")
+                .concat("Birth date: ").concat(String.valueOf(birth)).concat("\n")
+                .concat("Postal code: ").concat(String.valueOf(zip));
     }
 }
