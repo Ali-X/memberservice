@@ -1,5 +1,7 @@
 package ua.ali_x.memberservice.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import ua.ali_x.memberservice.service.MongoGridFsService;
@@ -9,16 +11,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
 
+@ApiModel(description = "All details about the member of the company.")
 public class Member {
 
     private static final Logger logger = Logger.getLogger(MongoGridFsService.class.getName());
 
     @Id
+    @ApiModelProperty(notes = "Keep in mind that member id has ObjectId type")
     private ObjectId _id;
     private String fname;
     private String lname;
+    @ApiModelProperty(notes = "The birth date should be only in DD.MM.YYYY format")
     private Date birth;
     private Integer zip;
+    @ApiModelProperty(notes = "This field is filled automatically")
     private String pictureId;
 
     public Member(ObjectId _id, String fname, String lname, Date birth, Integer zip, String pictureId) {
