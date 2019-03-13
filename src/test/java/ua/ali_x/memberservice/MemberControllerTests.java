@@ -23,7 +23,11 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -47,7 +51,7 @@ public class MemberControllerTests {
 
         given(memberService.findAll()).willReturn(memberList);
 
-        mvc.perform(MockMvcRequestBuilders.get("/member/")
+        mvc.perform(get("/member/")
                 .with(user("admin").password("admin"))
                 .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -61,7 +65,7 @@ public class MemberControllerTests {
 
         given(memberService.findById(member.get_id())).willReturn(member);
 
-        mvc.perform(MockMvcRequestBuilders.get("/member/" + member.get_id())
+        mvc.perform(get("/member/" + member.get_id())
                 .with(user("admin").password("admin"))
                 .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -78,6 +82,30 @@ public class MemberControllerTests {
                 .andExpect(status().isOk());
     }
 
+    @Test
+	public void saveMultipartData() throws Exception {
+		mvc.perform(post("/member/")
+			.with(user("admin").password("admin"))
+			.contentType(MULTIPART_FORM_DATA))
+			.andDo(print())
+			.andExpect(status().isOk());
+	}
+
+	@Test
+	public void saveWithoutContentType() throws Exception {
+		mvc.perform(post("/member/")
+			.with(user("admin").password("admin")))
+			.andDo(print())
+			.andExpect(status().isUnsupportedMediaType());
+	}
+
+	@Test
+	public void updateWithoutContentType() throws Exception {
+		mvc.perform(post("/member/" + ObjectId.get())
+			.with(user("admin").password("admin")))
+			.andDo(print())
+			.andExpect(status().isUnsupportedMediaType());
+	}
 
     private Member createTestMember() {
         Member testMember = new Member();
